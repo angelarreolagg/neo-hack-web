@@ -44,7 +44,7 @@ const eventSchema = new Schema<IEvent>(
  * Pre-save hook: generates URL-friendly slug from title (only if title changed),
  * normalizes date to ISO format (YYYY-MM-DD), and normalizes time to 24h format.
  */
-eventSchema.pre("save", function (next) {
+eventSchema.pre("save", function () {
   if (this.isModified("title")) {
     // Generate slug from title: lowercase, replace spaces/special chars with hyphens
     this.slug = this.title
@@ -95,12 +95,9 @@ eventSchema.pre("save", function (next) {
   for (const field of requiredFields) {
     const value = this.get(field);
     if (value === undefined || value === null || value === "") {
-      next(new Error(`${field} is required and cannot be empty`));
-      return;
+      throw new Error(`${field} is required and cannot be empty`);
     }
   }
-
-  next();
 });
 
 const Event: Model<IEvent> = mongoose.models.Event ?? mongoose.model<IEvent>("Event", eventSchema);

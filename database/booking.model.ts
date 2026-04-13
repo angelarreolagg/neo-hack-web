@@ -1,9 +1,9 @@
-import mongoose, { Schema, type Document, type Model, type RefType } from "mongoose";
+import mongoose, { Schema, type Document, type Model } from "mongoose";
 import Event from "./event.model";
 
 /** Mongoose document interface for Booking */
 export interface IBooking extends Document {
-  eventId: RefType;
+  eventId: mongoose.Types.ObjectId;
   email: string;
   createdAt: Date;
   updatedAt: Date;
@@ -23,21 +23,17 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /**
  * Pre-save hook: validates email format and verifies the referenced event exists.
  */
-bookingSchema.pre("save", async function (next) {
+bookingSchema.pre("save", async function () {
   // Validate email format
   if (!EMAIL_REGEX.test(this.email)) {
-    next(new Error("Invalid email format"));
-    return;
+    throw new Error("Invalid email format");
   }
 
   // Verify the event exists in the database
   const eventExists = await Event.exists({ _id: this.eventId });
   if (!eventExists) {
-    next(new Error("Referenced event does not exist"));
-    return;
+    throw new Error("Referenced event does not exist");
   }
-
-  next();
 });
 
 const Booking: Model<IBooking> = mongoose.models.Booking ?? mongoose.model<IBooking>("Booking", bookingSchema);
