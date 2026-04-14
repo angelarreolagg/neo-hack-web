@@ -8,7 +8,7 @@ import { Event } from "@/database";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ): Promise<NextResponse> {
   try {
     // Resolve dynamic route parameter
@@ -18,7 +18,7 @@ export async function GET(
     if (!slug || typeof slug !== "string" || slug.trim() === "") {
       return NextResponse.json(
         { error: "Invalid or missing slug parameter" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,10 +29,7 @@ export async function GET(
     const event = await Event.findOne({ slug: slug.trim() }).lean();
 
     if (!event) {
-      return NextResponse.json(
-        { error: "Event not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
     return NextResponse.json(event, { status: 200 });
@@ -40,7 +37,7 @@ export async function GET(
     console.error("Error fetching event:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
