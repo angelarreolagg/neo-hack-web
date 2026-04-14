@@ -32,7 +32,7 @@ export async function GET(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    return NextResponse.json(event, { status: 200 });
+    return NextResponse.json({ data: event }, { status: 200 });
   } catch (error) {
     console.error("Error fetching event:", error);
     return NextResponse.json(
